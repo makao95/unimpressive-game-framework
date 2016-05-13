@@ -1,0 +1,49 @@
+#include "UGF/BitmapFont.h"
+#include <fstream>
+#include <iostream>
+
+ugf::BitmapFont::BitmapFont(){
+
+}
+
+void ugf::BitmapFont::loadCharactersFromFile(std::string path){
+    std::fstream file;
+    file.open(path);
+    if (file.is_open()){
+        std::cout << "Font file opening error"<<std::endl;
+//        return;
+}
+    std::string line;
+    int top = 16;
+    int left = 0;
+    while (std::getline(file, line)){
+        if (line.at(0) == '#')
+            continue;
+
+        addChar(line, sf::IntRect(left, top, 10, 16));
+        left += 16;
+
+    }
+}
+
+void ugf::BitmapFont::addChar(std::string character, sf::IntRect rect){
+    std::cout << "Char: " << character << " rect: " << rect.left << " " << rect.top << " " << rect.width << " " << rect.height << std::endl;
+    charactersMap[character] = rect;
+}
+
+sf::VertexArray ugf::BitmapFont::getVertexArrayForText(std::string text){
+//    for(string )
+//    for (int i=0; i<5; i++){
+    for(auto it = text.begin(); it != text.end(); it++){
+//     std::string s = sf::Utf8.next(text.begin(), text.end());
+//     std::string s = std::to_string(text.at(i));
+     std::string character;
+     if ((*it) > 0xC0){//2 characters utf-8
+            character++;
+            character += (*it);
+    }
+     std::cout << "&& : "<<(*it)<<std::endl;
+}
+
+    return sf::VertexArray(sf::Quads);
+}

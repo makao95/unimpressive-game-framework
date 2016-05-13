@@ -1,0 +1,84 @@
+#include "UGF/IniFile.h"
+#include <fstream>
+#include <sstream>
+using namespace ugf;
+
+
+IniFile::loadFromFile(const std::string filename){
+    std::ifstream file;
+    if(!file.open(filename, std::ios::in))
+        throw IniExeption(IniFileExeptionCode::FILE_CANNOT_OPEN, filename);
+
+        std::string line;
+        int lineNumber = 0;
+        std::string categoryName;
+        while (std::getline(file, line)){
+            lineNumber++;
+
+            if (line.at(0) == '#' || line.at(0) == ';')
+                continue;
+            //Changing category
+            if(line.at(0) == '[')
+                for (int i=1; i<line.length(); i++)
+                    if(line.at(i) != ']')
+                        categoryName += line.at(i);
+                    else
+                        break;
+
+            //Parsing Variables
+            std::string variableName;
+            std::string variableValue;
+            int charNumberInLine = 0;
+            //Parsing Variable's name
+            while(line.at(charNumberInLine) == "="){
+                if (!std::isspace(line.at(charNumberInLine)))
+                    variableName += line.at(charNumberInLine);
+                charNumberInLine++;
+            }
+            //Parsing Variable value
+            bool stringMode = false;
+            bool specialChar = false; //for strings and " sign
+            for (; charNumberInLine != line.length(); charNumberInLine++) {
+                if (stringMode && line.at(charNumberInLine) == '"' && !specialChar)
+                    break;
+                if (line.at(charNumberInLine) == '"' && variableValue.length() == 0)
+                    stringMode = true;
+                else if (line.at(charNumberInLine == '\''))
+                    specialChar = true;
+                else if (stringMode)
+                    variableValue += line.at(charNumberInLine);
+                else if ((line.at(charNumberInLine == '#') || line.at(charNumberInLine == ';') ) && !stringMode )
+                    break; //comment
+                else
+                    if (!std::isspace(line.at(charNumberInLine)))
+                        variableValue += line.at(charNumberInLine);
+            }
+
+            if (!stringMode && variableValue.length() == 0)
+                throw IniExeption(IniFileExeptionCode::PARSING_ERROR, "File: " + filename + " line: " + std::to_string(lineNumber) + " name: " + variableName + " value: " + variableValue);
+
+            //Add Variable to category
+            //Bool
+            if (stringMode){
+                    getCategory(categoryName).setString(variableName, variableValue);
+            }else if (variableValue == "true")
+                    getCategory(categoryName).setBool(variableName, true);
+            else if (variableValue == "false")
+                getCategory(categoryName).setBool(variableName, false);
+            else if (variableValue.at(variableValue.length()-1) == 'f'){
+                variableValue.erase(variableValue.length()-1);
+                getCategory(categoryName).setFloat(std::stof(variableValue));
+            }else if (variableValue){
+                try{
+                    getCategory(categoryName).setInteger(std::stoi(variableValue));
+                }catch (const std::invalid_argument){
+                    throw IniExeption(IniFileExeptionCode::PARSING_ERROR, "File: " + filename + " line: " + std::to_string(lineNumber) + " name: " + variableName + " value: " + variableValue);
+                }
+            }
+                //float
+
+
+
+        }
+
+}
