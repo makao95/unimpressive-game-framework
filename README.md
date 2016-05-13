@@ -6,7 +6,9 @@
  * Ini files support
  * Bitmap based fonts
  * Very basic gui (buttons)
- * Framecounter
+ * Framecounter  
+
+ 
  Planned or in development
  * Basic actors system with fast drawing (for quad-based sprites)
  * AngelScript support (optional)
