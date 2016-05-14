@@ -12,7 +12,12 @@ ResourceManager& ResourceManager::getInstance(){
     return *instance;
 }
 
+void ResourceManager::setPrefix(std::string prefix){
+    this->prefix = prefix;
+}
+
 sf::Texture& ResourceManager::getTexture(std::string path){
+    path = prefix + path;
     auto it = textures.find(path);
     if (it != textures.end())
         return *(it->second);

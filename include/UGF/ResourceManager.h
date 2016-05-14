@@ -6,12 +6,14 @@
 namespace ugf {
 class ResourceManager {
 public:
-	static ResourceManager& getInstance();
+    static ResourceManager& getInstance();
 
-	sf::Texture& getTexture(std::string path);
+    void setPrefix(std::string prefix);
+
+    sf::Texture& getTexture(std::string path);
     sf::Image& getImage(std::string path);
     sf::Font getFont(std::string path);
-	ugf::BitmapFont& getBitmapFont(std::string path);
+    ugf::BitmapFont& getBitmapFont(std::string path);
 
     sf::Texture& createTexture(std::string path);
     sf::Texture& createImage(std::string path);
@@ -19,8 +21,9 @@ public:
     BitmapFont& createBitmapFont(std::string path);
 
 private:
-	ResourceManager();
-	static ResourceManager* instance;
+    ResourceManager();
+    static ResourceManager* instance;
+    std::string prefix;
     std::map<std::string, sf::Image*> images;
     std::map<std::string, sf::Texture*> textures;
     std::map<std::string, sf::Font*> fonts;
